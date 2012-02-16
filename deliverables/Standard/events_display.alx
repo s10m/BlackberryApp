@@ -1,0 +1,31 @@
+<loader version="1.0">
+	<application id="events_display">
+		<name >
+			
+		</name>
+		<description >
+			
+		</description>
+		<version >
+			1.0.0
+		</version>
+		<vendor >
+			BlackBerry Developer
+		</vendor>
+		<copyright >
+			Copyright (c) 2012 BlackBerry Developer
+		</copyright>
+		<fileset Java="1.54" _blackberryVersion="[7.0.0)">
+			<directory >
+				7.0.0
+			</directory>
+			<files >
+				events_display.cod
+
+			</files>
+
+		</fileset>
+
+	</application>
+
+</loader>
