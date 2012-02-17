@@ -20,8 +20,14 @@ public class View {
 		
 	}
 	
-	public void makeSelection(String[] c,String t)
-	{}
+	public void makeSelection()
+	{
+		String[] cats=screen.getSelectedCats();
+		String t=screen.getSelectedT();
+		controller.requestEvents(cats, t);
+		cur=model.getEvent(0);
+		curnum=0;
+	}
 	
 	public void getCategories()
 	{}
