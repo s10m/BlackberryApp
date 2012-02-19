@@ -34,7 +34,9 @@ public class App extends UiApplication
     	c=new Controller(m);
     	out=new OutputScreen();
     	v=new View(m,c,out);
+    	out.setView(v);
+    	v.setup();
         // Push a screen onto the UI stack for rendering.
-        pushScreen(new CatScreen());
+        pushScreen(out);//new CatScreen());
     }    
 }

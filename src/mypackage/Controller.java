@@ -11,7 +11,7 @@ public class Controller {
 	public void requestEvents(String[] prefs,String time)
 	{
 		//get new events into model
-		model.setEvents(arrtoStr(prefs), "1000");
+		model.setEvents(arrtoStr(prefs), time);
 	}
 	
 	private String arrtoStr (String[] in)
