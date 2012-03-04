@@ -3,6 +3,7 @@ package mypackage;
 public class Event {
 	private String title,location,info;
 	private String[] categories;
+	
 	public String getTitle(){return title;}
 	public String getLoc(){return location;}
 	public String getInfo(){return info;}

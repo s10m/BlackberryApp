@@ -8,18 +8,10 @@ public class Controller {
 		model=m;
 	}
 	
-	public void requestEvents(String[] prefs,String time)
+	public void requestEvents(String[] prefs,String[] time)
 	{
 		//get new events into model
-		model.setEvents(arrtoStr(prefs), time);
-	}
-	
-	private String arrtoStr (String[] in)
-	{
-		StringBuffer retbuff=new StringBuffer();
-		for(int i=0;i<in.length;i++)
-			retbuff.append(in[i]);
-		return retbuff.toString();
+		model.setEvents(prefs, time);
 	}
 	
 	public void requestCategories()

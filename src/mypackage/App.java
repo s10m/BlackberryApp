@@ -11,7 +11,7 @@ public class App extends UiApplication
     /**
      * Entry point for application
      * @param args Command line arguments (not used)
-     */ 
+     */
 	private Model m;
 	private View v;
 	private Controller c;
@@ -37,6 +37,6 @@ public class App extends UiApplication
     	out.setView(v);
     	v.setup();
         // Push a screen onto the UI stack for rendering.
-        pushScreen(out);//new CatScreen());
+        //pushScreen(out);//new CatScreen());
     }    
 }

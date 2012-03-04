@@ -2,15 +2,15 @@ MIDlet-Name: Blackberry App
 MIDlet-Version: 1.0.0
 MIDlet-Vendor: BlackBerry Developer
 MIDlet-Jar-URL: Blackberry App.jar
-MIDlet-Jar-Size: 18967
+MIDlet-Jar-Size: 21257
 MicroEdition-Profile: MIDP-2.0
 MicroEdition-Configuration: CLDC-1.1
 MIDlet-1: ,img/icon.png,
 RIM-MIDlet-Flags-1: 0
 Manifest-Version: 1.0
 RIM-COD-URL: events_display.cod
-RIM-COD-Size: 7096
-RIM-COD-Creation-Time: 1329679334
+RIM-COD-Size: 8368
+RIM-COD-Creation-Time: 1330821366
 RIM-COD-Module-Name: events_display
 RIM-COD-Module-Dependencies: net_rim_cldc
-RIM-COD-SHA1: 9a 30 0a 01 8b 02 b4 67 ca 82 3b 78 f9 73 bc eb b0 71 72 f8
+RIM-COD-SHA1: 46 02 3d 67 a8 57 45 67 a6 72 26 c5 55 e4 2e f6 4b 53 4f ad
