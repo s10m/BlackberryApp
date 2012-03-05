@@ -118,7 +118,7 @@ public final class OutputScreen extends MainScreen{
 		private void setToNew(Category[] categories)
 		{
 			int it=0;
-			Date date = new Date();
+			Date date = new Date(System.currentTimeMillis());
 			displayedPickCats=new ObjectChoiceField[6];
 			//display cats
 			String[] catsStrs=new String[categories.length+1];

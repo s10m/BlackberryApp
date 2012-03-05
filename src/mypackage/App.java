@@ -1,6 +1,11 @@
 package mypackage;
 
+import javax.microedition.io.*;
+import java.io.*;
+
 import net.rim.device.api.ui.UiApplication;
+import java.io.IOException;
+import javax.microedition.io.*;
 
 /**
  * This class extends the UiApplication class, providing a
@@ -30,6 +35,7 @@ public class App extends UiApplication
      */
     public App()
     {
+    	
     	m=new Model();
     	c=new Controller(m);
     	out=new OutputScreen();
