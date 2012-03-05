@@ -8,6 +8,7 @@ import javax.microedition.io.*;
 import net.rim.device.api.ui.container.*;
 import net.rim.device.api.io.messaging.*;
 import org.json.me.*;
+import java.util.Vector;
 
 
 public class INetConnect {
@@ -18,25 +19,26 @@ public class INetConnect {
 	public Category[] fetchCategories()
 	{
 		HttpConnection conn = null;
+		int respc;
+		Category[] ret;
     	try
     	{
-    		conn = (HttpConnection) Connector.open("http://www.ignignokt.co.uk/;interface=wifi");
+    		conn = (HttpConnection) Connector.open("http://www.ignignokt.co.uk/service/category/;interface=wifi");
     		if(conn==null)
     			throw new IOException();
     		else//have connection
     		{
     			String inStr;
+    			String[] names;
     			//Object in;
-    			DataOutputStream os = conn.openDataOutputStream();
-    			conn.setRequestMethod("GET");
-    			os.write("GET /service/category/ HTTP/1.1".getBytes());
-    			os.write(new byte[]{'\r','\n'});
-    			os.write("Host: www.ignignokt.co.uk".getBytes());
-    			os.write(new byte[]{'\r','\n','\r','\n'});
+    			if((respc=conn.getResponseCode())!=HttpConnection.HTTP_OK) return new Category[]{new Category("ErrorResp")};;
     			DataInputStream is = conn.openDataInputStream();
     			inStr = new String(net.rim.device.api.io.IOUtilities.streamToBytes(is));
-    			inStr=getFirstfromJSON(inStr);
-    			return new Category[] {new Category(inStr)};
+    			names=getnamesJSON(inStr);
+    			ret=new Category[names.length];
+    			for(int i=0;i<ret.length;i++)
+    				ret[i]=new Category(names[i]);
+    			return ret;
     		}
     	}
     	catch(IOException e)
@@ -47,25 +49,76 @@ public class INetConnect {
 		return new Category[]{new Category("failed")};
 	}
 	
-	private String getFirstfromJSON(String in)
+	private String[] getnamesJSON(String in)
 	{
 		int ptr=0,ptrend;
-		while((in.charAt(ptr++)!='{')&&(ptr<in.length()));
-		if(ptr>=in.length()) return ""+in.charAt(ptr-1);
-		while(in.charAt(ptr++)!='n');
-		ptr+=7;
-		ptrend=ptr;
-		while(in.charAt(ptrend++)!='"');
-		return in.substring(ptr,ptrend);
+		String[] ret;
+		Vector namesvec=new Vector();
+		while(true)
+		{
+			while ((in.charAt(ptr++)!='{')&&(ptr<in.length()));
+			while (in.charAt(ptr++)!='n');
+			ptr+=6;
+			ptrend=ptr;
+			while (in.charAt(ptrend++)!='"');
+			namesvec.addElement(in.substring(ptr,ptrend-1));
+			if (in.charAt(ptrend+1)==']') break;
+		}
+		
+		ret = new String[namesvec.size()];
+		namesvec.copyInto(ret);
+		
+		return ret;
+	}
+	
+	private Event[] getevsJSON(String in)
+	{
+		int start=0,fin,ts=0;
+		Vector evs=new Vector();
+		while(true)
+		{
+			while(in.charAt(start++)!=',');
+			while(in.charAt(start++)!=':');
+			start++;
+			fin=start;
+			while(in.charAt(fin++)!='"');
+			evs.addElement(in.substring(start,fin-1));
+			if(++ts==3)break;
+		}
+		return new Event[]{new Event((String)evs.elementAt(0),(String)evs.elementAt(1),(String)evs.elementAt(2))};
 	}
 	
 	public Event[] fetchEvents(String[] cats, String[] ts)
 	{
-		int num=0;
-		Event[] ret;
+		HttpConnection conn = null;
+		int respc;
+		Event[] ret=new Event[]{new Event("n","n","n",new String[]{"n"})};
+    	try
+    	{
+    		conn = (HttpConnection) Connector.open("http://www.ignignokt.co.uk/service/event/?"/*+"start="+ts[0]+"&end="+ts[1]*/+"&filter="+cats[0]+"/;interface=wifi");
+    		if(conn==null)
+    			throw new IOException();
+    		else//have connection
+    		{
+    			String inStr;
+    			String[] names;
+    			//Object in;
+    			if((respc=conn.getResponseCode())!=HttpConnection.HTTP_OK) return new Event[]{new Event("n","n","n",new String[]{"n"})};
+    			DataInputStream is = conn.openDataInputStream();
+    			inStr = new String(net.rim.device.api.io.IOUtilities.streamToBytes(is));
+    			return getevsJSON(inStr);
+    		}
+    	}
+    	catch(IOException e)
+    	{
+    		System.out.println(e.getMessage());
+    		//System.exit(1);
+    	}
+		/*int num=0;
+		Event[] ret=new Event[2];
 		Event[] estmp=new Event[5];
-		estmp[0]=new Event("Title: Orchestra","Location: Van Mildert","Info: great music and fantastic atmosphere.",new String[] {"social"});
-		estmp[1]=new Event("Title: Talk on Black Holes","Location: Physics building","Info: chance to find out about these wonderful things.",new String[] {"academic"});
+		ret[0]=new Event("Title: Orchestra","Location: Van Mildert","Info: great music and fantastic atmosphere.",new String[] {"social"});
+		ret[1]=new Event("Title: Talk on Black Holes","Location: Physics building","Info: chance to find out about these wonderful things.",new String[] {"academic"});
 		estmp[2]=new Event("Title: Hatfield Book Club","Location: Hatfield JCR","Info: This weeks book is Twilight: Breaking Dawn.",new String[] {"social"});
 		estmp[3]=new Event("Title: Employee Fair","Location: CL 205","Info: Come and get infomation about loads of graduate and internship schemes from top employers.",new String[] {"academic"});
 		estmp[4]=new Event("Title: Pool Tournament","Location: Rileys, Stockton","Info: Come and test yourself against the best!",new String[] {"social"});
@@ -86,7 +139,7 @@ public class INetConnect {
 				{
 					ret[num++]=estmp[i];
 					break;
-				}
+				}*/
 		return ret;
 	}
 }

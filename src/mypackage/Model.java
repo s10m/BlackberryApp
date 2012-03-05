@@ -15,7 +15,7 @@ public class Model {
 	public void setEvents(String[] ps,String[] time)
 	{
 		//update es by connecting to webservice
-		netConn.fetchEvents(ps, time);
+		es = netConn.fetchEvents(ps, time);
 		eNum=-1;
 	}
 	

@@ -9,6 +9,12 @@ public class Event {
 	public String getInfo(){return info;}
 	public String[] getCats(){return categories;}
 	
+	public Event (String name,String desc,String loc)
+	{
+		title=name;
+		info=desc;
+		location =loc;
+	}
 	public Event ( String t,String l,String i,String[] cats)
 	{
 		title=t;
