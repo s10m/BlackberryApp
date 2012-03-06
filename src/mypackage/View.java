@@ -35,8 +35,7 @@ public class View {
 			showEvent();
 		else
 		{
-			screen.displayError("There are no events between the specified dates in the specified categories.");
-			setup();//display error and reset
+			screen.displayError("There are no events between the specified dates in the specified categories.");//display error
 		}
 	}
 	

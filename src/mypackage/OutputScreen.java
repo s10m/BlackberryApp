@@ -149,7 +149,7 @@ public final class OutputScreen extends MainScreen{
 		{
 			int it=0;
 			Date date = new Date(System.currentTimeMillis());
-			displayedPickCats=new ObjectChoiceField[6];
+			displayedPickCats=new ObjectChoiceField[5];
 			
 			//display cats
 			String[] catsStrs=new String[categories.length+1];
@@ -165,8 +165,8 @@ public final class OutputScreen extends MainScreen{
 			
 			while(it<displayedPickCats.length)add(displayedPickCats[it++]);//add to screen
 			
-			fromDF = new DateField ("from", date.getTime(), dFormat);
-			toDF = new DateField ("until", date.getTime(),dFormat);
+			fromDF = new DateField ("From", date.getTime(), dFormat);
+			toDF = new DateField ("Until", date.getTime()+(4*24*60*60*1000),dFormat);//2 days in future
 			
 			sortBy=new ObjectChoiceField("Sort Events by date",new String[] {"Ascending","Descending"});//add sort by field
 			
@@ -175,6 +175,9 @@ public final class OutputScreen extends MainScreen{
 			add(fromDF);
 			add(toDF);
 			add(sortBy);//add ending elements
+			RichTextField insts = new RichTextField("When you have finished making your selection, select \"Pick\" by pressing the menu button.",RichTextField.TEXT_JUSTIFY_HCENTER);
+			insts.setFont(Font.getDefault().derive(Font.BOLD));
+			add(insts);
 		}
 
 		public String[] getSelectedCs()
@@ -283,7 +286,7 @@ public final class OutputScreen extends MainScreen{
 		{
 			//display event
 			//setTitle(event.getTitle());
-			RichTextField rtftit=new RichTextField("Title: "+event.getTitle());
+			RichTextField rtftit=new RichTextField(event.getTitle(),RichTextField.TEXT_JUSTIFY_HCENTER);
 			RichTextField rtfev=new RichTextField("Event "+event.getofN());
 			RichTextField rtfstrt=new RichTextField("Start: "+event.getStart());
 			RichTextField rtfend=new RichTextField("End: "+event.getEnd());
@@ -296,11 +299,11 @@ public final class OutputScreen extends MainScreen{
 			rtfstrt.setFont(Font.getDefault().derive(Font.PLAIN, 12, Ui.UNITS_pt));
 			rtfend.setFont(Font.getDefault().derive(Font.PLAIN, 12, Ui.UNITS_pt));
 			add(rtftit);
-			add(rtfev);
 			add(rtfstrt);
 			add(rtfend);
 			add(rtfloc);
 			add(rtfdesc);
+			add(rtfev);
 		}
 	}
 
