@@ -1,5 +1,7 @@
 package mypackage;
-
+/*
+ * simple storage class for Strings representing categories
+ */
 public class Category {
 	private String name;
 	

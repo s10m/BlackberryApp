@@ -1,5 +1,7 @@
 package mypackage;
-
+/*
+ * links everything together
+ */
 public class View {
 	private Event cur;
 	private Model model;
@@ -15,18 +17,38 @@ public class View {
 	
 	private void showEvent()
 	{
-		screen.displayEvent(cur);//task screen with displaying cur event
+		screen.displayEvent(cur);//task screen with displaying current event, cur
 	}
 	
-	public void setup()
+	public void setup()//initialise and zero everything
 	{
 		getCategories();
 		showCategories();
 	}
-	
-	public void getNextEvent()
+	/*
+	 * for cycling through events
+	 */
+	public void getNextEvent()//fetch next event, is first "cycle" call
 	{
 		cur=model.getNextEvent();
+		if(cur!=null)//null is error
+			showEvent();
+		else
+		{
+			screen.displayError("There are no events between the specified dates in the specified categories.");
+			setup();//display error and reset
+		}
+	}
+	
+	public void FFwd()
+	{
+		cur=model.advanceFive();
+		showEvent();
+	}
+	
+	public void rwind()
+	{
+		cur=model.rewindFive();
 		showEvent();
 	}
 	
@@ -36,15 +58,13 @@ public class View {
 		showEvent();
 	}
 	
-	public void makeSelection()
+	public void makeSelection()//get user input and start displaying events
 	{
 		String[] cats=screen.getSelectedCats();
-		if(cats.length>0){
-			String[] t = screen.getSelectedT();
-			controller.requestEvents(cats, t);
-			cur=model.getNextEvent();
-			showEvent();
-		}
+		String[] t = screen.getSelectedT();
+		String sorted = screen.getsortedby();
+		controller.requestEvents(cats, t, sorted);
+		getNextEvent();
 	}
 	
 	public void getCategories()
@@ -55,6 +75,6 @@ public class View {
 	public void showCategories()
 	{
 		Category[] cats=model.getCategories();//get categories from model
-		screen.displayCategories(cats);//task screen with displaying all categories
+		screen.displayCategories(cats);//task screen with displaying all categories. will handle errors on it's own
 	}
 }

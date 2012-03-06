@@ -35,14 +35,11 @@ public class App extends UiApplication
      */
     public App()
     {
-    	
     	m=new Model();
     	c=new Controller(m);
     	out=new OutputScreen();
-    	v=new View(m,c,out);
-    	out.setView(v);
-    	v.setup();
-        // Push a screen onto the UI stack for rendering.
-        //pushScreen(out);//new CatScreen());
+    	v=new View(m,c,out);//create the modules
+    	out.setView(v);//and link them
+    	v.setup();//set up the view module
     }    
 }

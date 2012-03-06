@@ -2,158 +2,159 @@ package mypackage;
 import javax.microedition.io.*;
 import java.io.*;
 
-import net.rim.device.api.ui.UiApplication;
 import java.io.IOException;
-import javax.microedition.io.*;
-import net.rim.device.api.ui.container.*;
-import net.rim.device.api.io.messaging.*;
-import org.json.me.*;
 import java.util.Vector;
 
-
+/*
+ * manages connection to the network
+ */
 public class INetConnect {
-	public INetConnect()
-	{
-		
-	}
+	/*
+	 * opens new connection, returns an array of categories
+	 */
 	public Category[] fetchCategories()
 	{
 		HttpConnection conn = null;
-		int respc;
 		Category[] ret;
-    	try
-    	{
-    		conn = (HttpConnection) Connector.open("http://www.ignignokt.co.uk/service/category/;interface=wifi");
-    		if(conn==null)
-    			throw new IOException();
-    		else//have connection
-    		{
-    			String inStr;
-    			String[] names;
-    			//Object in;
-    			if((respc=conn.getResponseCode())!=HttpConnection.HTTP_OK) return new Category[]{new Category("ErrorResp")};;
-    			DataInputStream is = conn.openDataInputStream();
-    			inStr = new String(net.rim.device.api.io.IOUtilities.streamToBytes(is));
-    			names=getnamesJSON(inStr);
-    			ret=new Category[names.length];
-    			for(int i=0;i<ret.length;i++)
-    				ret[i]=new Category(names[i]);
-    			return ret;
-    		}
-    	}
-    	catch(IOException e)
-    	{
-    		System.out.println(e.getMessage());
-    		//System.exit(1);
-    	}
-		return new Category[]{new Category("failed")};
+
+		try
+		{
+			conn = (HttpConnection) Connector.open("http://www.ignignokt.co.uk/service/category;interface=wifi");//open connection to the webservice at the correct url 
+			if (conn==null)
+				throw new IOException();
+
+			else//have connection
+			{
+				String inStr;
+				String[] names;
+
+				if (conn.getResponseCode() != HttpConnection.HTTP_OK)
+					return null;//on error return null
+
+				DataInputStream is = conn.openDataInputStream();
+				inStr = new String(net.rim.device.api.io.IOUtilities.streamToBytes(is));
+				names=getnamesJSON(inStr);//parse json to get names
+
+				ret=new Category[names.length];
+
+				for(int i=0;i<ret.length;i++)
+					ret[i]=new Category(names[i]);
+				conn.close();
+				return ret;
+			}
+		}
+		catch(IOException e)
+		{
+			return null;
+		}
 	}
-	
+
 	private String[] getnamesJSON(String in)
 	{
 		int ptr=0,ptrend;
 		String[] ret;
 		Vector namesvec=new Vector();
+
 		while(true)
 		{
-			while ((in.charAt(ptr++)!='{')&&(ptr<in.length()));
-			while (in.charAt(ptr++)!='n');
-			ptr+=6;
+			while ((in.charAt(ptr++)!='{')&&(ptr<in.length()));//increment to the next element
+			while (in.charAt(ptr++)!=',');//increment until first char of "name" (second payload)
+			while(in.charAt(ptr++)!=':');//advance to beginning of payload
+			ptr++;
 			ptrend=ptr;
-			while (in.charAt(ptrend++)!='"');
-			namesvec.addElement(in.substring(ptr,ptrend-1));
-			if (in.charAt(ptrend+1)==']') break;
+			while (in.charAt(ptrend++)!='"');//advance to end of payload
+			namesvec.addElement(in.substring(ptr,ptrend-1));//save payload
+			if (in.charAt(ptrend+1)==']') break;//break at end of message
 		}
-		
+
 		ret = new String[namesvec.size()];
 		namesvec.copyInto(ret);
-		
+
 		return ret;
 	}
-	
+
 	private Event[] getevsJSON(String in)
 	{
 		int start=0,fin,ts=0,tsout=0;
 		boolean done=false;
 		Event[] ret;
 		Vector evsparams,evs=new Vector();
+
 		while(!done)
 		{
-			evsparams = new Vector();
+			evsparams = new Vector();//use for storing 5 parameters for event
+
 			while(true)
 			{
-				while(in.charAt(start++)!=',');
+				while(in.charAt(start++)!=',');//increment to second thing
 				while(in.charAt(start++)!=':');
-				start++;
+				start++;//advance to payload start
 				fin=start;
 				while(in.charAt(fin++)!='"');
-				evsparams.addElement(in.substring(start,fin-1));
-				if(++ts==3)break;
+				evsparams.addElement(in.substring(start,fin-1));//copy payload
+				if(++ts==5)break;//do five elements per event
 			}
-			evs.addElement(new Event((String)evsparams.elementAt(0),(String)evsparams.elementAt(1),(String)evsparams.elementAt(2)));
-			while ((!done)&&!((in.charAt(start)==',')&&(in.charAt(start+1)=='{')))
+			evs.addElement(new Event((String)evsparams.elementAt(0),(String)evsparams.elementAt(1),(String)evsparams.elementAt(2),(String)evsparams.elementAt(3),(String)evsparams.elementAt(4)));//create new event with acquired params
+
+			while ((!done)&&!((in.charAt(start)==',')&&(in.charAt(start+1)=='{')))//advance to next event while not at end
 				if (++start>=in.length()) done=true;
-			start++;
+
+			start++;//advance start to beginning of next event
 			ts=0;
-			//if(++tsout>=10)break;
 		}
+
 		ret = new Event[evs.size()];
 		evs.copyInto(ret);
 		return ret;
 	}
-	
-	public Event[] fetchEvents(String[] cats, String[] ts)
+
+	public Event[] fetchEvents(String[] cats, String[] ts, String sort)
 	{
 		HttpConnection conn = null;
-		int respc;
-		Event[] ret=new Event[]{new Event("n","n","n",new String[]{"n"})};
-    	try
-    	{
-    		conn = (HttpConnection) Connector.open("http://www.ignignokt.co.uk/service/event/?"/*+"start="+ts[0]+"&end="+ts[1]*/+"&filter="+cats[0]+"/;interface=wifi");
-    		if(conn==null)
-    			throw new IOException();
-    		else//have connection
-    		{
-    			String inStr;
-    			String[] names;
-    			//Object in;
-    			if((respc=conn.getResponseCode())!=HttpConnection.HTTP_OK) return new Event[]{new Event("n","n","n",new String[]{"n"})};
-    			DataInputStream is = conn.openDataInputStream();
-    			inStr = new String(net.rim.device.api.io.IOUtilities.streamToBytes(is));
-    			return getevsJSON(inStr);
-    		}
-    	}
-    	catch(IOException e)
-    	{
-    		System.out.println(e.getMessage());
-    		//System.exit(1);
-    	}
-		/*int num=0;
-		Event[] ret=new Event[2];
-		Event[] estmp=new Event[5];
-		ret[0]=new Event("Title: Orchestra","Location: Van Mildert","Info: great music and fantastic atmosphere.",new String[] {"social"});
-		ret[1]=new Event("Title: Talk on Black Holes","Location: Physics building","Info: chance to find out about these wonderful things.",new String[] {"academic"});
-		estmp[2]=new Event("Title: Hatfield Book Club","Location: Hatfield JCR","Info: This weeks book is Twilight: Breaking Dawn.",new String[] {"social"});
-		estmp[3]=new Event("Title: Employee Fair","Location: CL 205","Info: Come and get infomation about loads of graduate and internship schemes from top employers.",new String[] {"academic"});
-		estmp[4]=new Event("Title: Pool Tournament","Location: Rileys, Stockton","Info: Come and test yourself against the best!",new String[] {"social"});
-		for(int i=0;i<estmp.length;i++)
-			for(int j=0;j<cats.length;j++)
-				if (estmp[i].getCats()[0].equals(cats[j]))
+
+		Event[] ret=null;
+
+		try
+		{
+			String urlStr;
+			urlStr = "http://www.ignignokt.co.uk/service/event/?"+"start="+ts[0]+"&end="+ts[1];
+			if(cats.length>0) urlStr += "&filter=";
+			for (int c=0;c<cats.length;c++)
+			{
+				if(cats[c].length()>0)
 				{
-					num++;
-					break;
+					urlStr += cats[c];
+					if (c<cats.length-1)
+						urlStr += ",";
 				}
-		
-		ret=new Event[num];
-		num=0;
-		
-		for(int i=0;i<estmp.length;i++)
-			for(int j=0;j<cats.length;j++)
-				if(estmp[i].getCats()[0].equals(cats[j]))
-				{
-					ret[num++]=estmp[i];
-					break;
-				}*/
-		return ret;
+			}
+			urlStr += "&sort="+sort+";interface=wifi";
+			System.out.println("urlStr = "+urlStr);
+			//create URL
+			conn = (HttpConnection) Connector.open(urlStr);//make new connection
+
+			if(conn==null)
+				throw new IOException();
+
+
+			if (conn!=null)//have connection
+			{
+				String inStr;
+				//Object in;
+				if(conn.getResponseCode()!=HttpConnection.HTTP_OK) return null;
+				DataInputStream is = conn.openDataInputStream();
+				inStr = new String(net.rim.device.api.io.IOUtilities.streamToBytes(is));
+
+				conn.close();
+				return getevsJSON(inStr);//parses json, if valid, into Event array
+			}
+		}
+		catch(Exception e)
+		{
+			System.out.println(e.getMessage());
+			//System.exit(1);
+		}
+
+		return ret;//null on error
 	}
 }
