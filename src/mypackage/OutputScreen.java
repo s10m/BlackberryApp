@@ -151,7 +151,6 @@ public final class OutputScreen extends MainScreen{
 			it=0;
 			while(it<num)
 				ret[it]=rettmp[it++];
-			
 			return ret;
 		}
 		

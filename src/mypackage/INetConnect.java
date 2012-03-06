@@ -73,19 +73,33 @@ public class INetConnect {
 	
 	private Event[] getevsJSON(String in)
 	{
-		int start=0,fin,ts=0;
-		Vector evs=new Vector();
-		while(true)
+		int start=0,fin,ts=0,tsout=0;
+		boolean done=false;
+		Event[] ret;
+		Vector evsparams,evs=new Vector();
+		while(!done)
 		{
-			while(in.charAt(start++)!=',');
-			while(in.charAt(start++)!=':');
+			evsparams = new Vector();
+			while(true)
+			{
+				while(in.charAt(start++)!=',');
+				while(in.charAt(start++)!=':');
+				start++;
+				fin=start;
+				while(in.charAt(fin++)!='"');
+				evsparams.addElement(in.substring(start,fin-1));
+				if(++ts==3)break;
+			}
+			evs.addElement(new Event((String)evsparams.elementAt(0),(String)evsparams.elementAt(1),(String)evsparams.elementAt(2)));
+			while ((!done)&&!((in.charAt(start)==',')&&(in.charAt(start+1)=='{')))
+				if (++start>=in.length()) done=true;
 			start++;
-			fin=start;
-			while(in.charAt(fin++)!='"');
-			evs.addElement(in.substring(start,fin-1));
-			if(++ts==3)break;
+			ts=0;
+			//if(++tsout>=10)break;
 		}
-		return new Event[]{new Event((String)evs.elementAt(0),(String)evs.elementAt(1),(String)evs.elementAt(2))};
+		ret = new Event[evs.size()];
+		evs.copyInto(ret);
+		return ret;
 	}
 	
 	public Event[] fetchEvents(String[] cats, String[] ts)

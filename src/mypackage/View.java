@@ -39,12 +39,12 @@ public class View {
 	public void makeSelection()
 	{
 		String[] cats=screen.getSelectedCats();
-		//if(cats.length>0){
-			String[] t=screen.getSelectedT();
+		if(cats.length>0){
+			String[] t = screen.getSelectedT();
 			controller.requestEvents(cats, t);
 			cur=model.getNextEvent();
 			showEvent();
-		//}
+		}
 	}
 	
 	public void getCategories()
